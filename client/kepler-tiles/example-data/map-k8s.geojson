@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "COGURL": "http://159.122.178.150:30458/tiles/{z}/{x}/{y}@2x?url=http://159.122.186.33:30900/cog/COG-output-with-ovr.tif"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [168.452,-17.557],[168.452,-17.550],[168.459,-17.549],[168.459,-17.557],[168.452,-17.557]
+          ]
+        ]
+      }
+    }
+  ]
+}
+

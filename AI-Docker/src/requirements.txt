@@ -1,0 +1,9 @@
+ibm_cos_sdk_core==2.3.0
+MedPy==0.3.0
+scipy==1.1.0
+numpy==1.15.2
+ibm_cos_sdk==2.3.0
+coloredlogs==10.0
+cachetools==2.1.0
+matplotlib==3.0.0
+scikit_learn==0.20.0
