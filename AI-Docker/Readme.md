@@ -4,8 +4,10 @@ It performs full AI processing:
 - data whitening
 - fitting
 - predicting
-- generating of CloudOptimizedGeo tiff file,
-- uploading generated COG-tif to IBM _Cloud Storage_ and making uploaded file public-readable 
+- generating of  [Cloud Optimized GeoTIFF (COG)](https://www.cogeo.org/)  file,
+- generating of [Geo-json](http://geojson.org/) file to be used in [Kepler-tiles viewer](https://github.com/Opt-OSS/AI-GEO/tree/master/client/kepler-tiles),
+- uploading generated COG-tiff and assossiated Geo-json files 
+    to IBM _Cloud Storage_ and making uploaded file public-readable 
 
 Docker image could be run either locally with local-volumes mounted for the best performance on big Data-sets 
 or as a job in kubernetes IBM BlueMix cloud cluster
@@ -13,7 +15,9 @@ or as a job in kubernetes IBM BlueMix cloud cluster
 If the image is run locally, missed data-set files will be downloaded from IBM _Cloud Storage_ 
 and cached locally
 
-Cloud-based _Kepler-tiles viewer_ and _COG-tiles server_ could be used to visualize generated images.   
+Cloud-based [Kepler-tiles viewer](https://github.com/Opt-OSS/AI-GEO/tree/master/client/kepler-tiles),
+ and [COG-tiles server](https://hub.docker.com/r/vladzaitsev/tilesrdntio_tiles/) (based on [mojodna/marblecutter-virtual](https://github.com/mojodna/marblecutter-virtual)) 
+ could be used to visualize generated images.   
 Docker files for these software images could be found in this repository in the `client` folder
 
 Refer `s4_shell.sh` and `s4_run.sh` if running image locally
@@ -34,6 +38,10 @@ Refer `s4_shell.sh` and `s4_run.sh` if running image locally
     "endpoint": "https://s3.eu-de.objectstorage.softlayer.net",
     "bucket": "cog-1",
     "ResultKey":"cog-medium.tif"
+  },
+  "GEOJSON":{
+  
+            "COGURL": "http://159.122.178.150:30458/tiles/{z}/{x}/{y}@2x?url=https://s3.eu-de.objectstorage.softlayer.net/cog-1/cog-small.tif"
   },
   "channels": {
     "sigma":     [      "Sigma0_IW2_VH_mst_06Aug2018"    ],
@@ -62,6 +70,7 @@ where
 - `DATADIR` for input *.img and *.hdr files
 - `OUTDIR` for input *.img and *.hdr files
 - `COS` Cloud Object Storage to be used 
+- `GEOJSON.COGURL` url to be injected in Geo-json file (for usage with _Kepler-tiles viewer_ ) 
 #### COS object
 - `credentials` file with content of IBM bluemix credentials JSON string, default to  `/root/.bluemix/cos_credentials`
 - `endpoint` and `backet` IBM Object Storage URL and Bucket 

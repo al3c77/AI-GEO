@@ -65,11 +65,13 @@ if not os.path.isfile(file):
     log.critical("File doen not exists! %s", file)
     raise SystemExit(1)
 
-w = GDALWrap(file, out_file, cog_file)
+w = GDALWrap(recipe,file, out_file, cog_file)
 try:
+    w.make_gep_json()
     w.gdaltranslate()
     w.gdalwarp()
     w.gdaladdo()
+
 except RuntimeError as e:
     log.critical("COG-tiff generation failed %s", e)
 
@@ -84,3 +86,5 @@ if not cos_key:
 
 log.info("uploading %s as %s", cog_file, cos_key)
 cos.publish(cog_file, cos_key)
+if os.path.isfile(cog_file + '.geojson'):
+    cos.publish(cog_file + '.geojson', cos_key + '.geojson')

@@ -2,9 +2,14 @@
   "DATADIR": "../test-data/small/data/",
   "OUTDIR": "../test-data/small/out/",
   "COS": {
+    "credentials": "../bluemix/cos_credentials",
     "endpoint": "https://s3.eu-de.objectstorage.softlayer.net",
     "bucket": "cog-1",
-    "ResultKey":"cog-small.tif"
+    "ResultKey": "cog-small.tif"
+  },
+  "GEOJSON":{
+
+          "COGURL": "http://159.122.178.150:30458/tiles/{z}/{x}/{y}@2x?url=https://s3.eu-de.objectstorage.softlayer.net/cog-1/cog-small.tif"
   },
   "channels": {
     "sigma": [
