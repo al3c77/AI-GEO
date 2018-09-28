@@ -10,8 +10,13 @@
 ```json
 {
   "DATADIR": "/data/",
-  "OUTDIR": "/data/out/",
-  "COS":{"endpoint":"https://s3.eu-de.objectstorage.softlayer.net", "bucket":"cos-1"},
+  "OUTDIR": "/out/",
+  "COS": {
+    "credentials": "../bluemix/cos_credentials",
+    "endpoint": "https://s3.eu-de.objectstorage.softlayer.net",
+    "bucket": "cog-1",
+    "ResultKey":"cog-medium.tif"
+  },
   "channels": {
     "sigma":     [      "Sigma0_IW2_VH_mst_06Aug2018"    ],
     "sigma_avg": [      "Sigma0_IW2_VH_mst_06Aug2018"    ],
@@ -39,7 +44,11 @@ where
 - `DATADIR` for input *.img and *.hdr files
 - `OUTDIR` for input *.img and *.hdr files
 - `COS` Cloud Object Storage to be used 
-
+#### COS object
+- `credentials` file with content of IBM bluemix credentials JSON string, default to  `/root/.bluemix/cos_credentials`
+- `endpoint` and `backet` IBM Object Storage URL and Bucket 
+- `ResultKey` key to be used when result published to IBM Object Sotage
+ 
 > use private COS endpoint if image runs inside IBM cloud
 
 ## Running
@@ -51,7 +60,6 @@ app uses 2 directories (mount-points) from recipe file:
 
 #### Cloud Object Storage
 - if file not exists in `{DATADIR}` app will download it form COS storage
-- credentials for bluemix COS should be placed in `/root/.bluemix/cos_credentials` file
 - if downloading failed app will exit with error
  
 
