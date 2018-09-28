@@ -9,10 +9,10 @@ AI solution will primarily use Sentinel 1 interferometric Synthetic Aperture Rad
 ### Components
 
 #### client
-KeplerGL based visualiser for Cloud Optimised GeoTIF images is a modern and convenient visualiser.
+KeplerGL based viewer for Cloud Optimized GeoTIFF tiles is a modern and convenient visualiser.
 
 #### server
-Web based tile server.
+COG and Tile-server Web API.
 
 #### AI
 Python 3.7 intelligent data pre-processor and clusterer that runs in Docker containers. Can be deployed to Kubernetes platform or execulted locally. This solution should work with unstructured satellite imagery and provide quick turnaround for rapid and precice change detection.
