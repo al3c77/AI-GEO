@@ -20,7 +20,11 @@ class GDALWrap(object):
         self.cog_file = cog_file
         self.out_file = out_file
         self.file = input_file
-
+    def gdalinfo(self)->None:
+        """
+            gdalinfo -json
+        """
+        pass
     def gdaltranslate(self) -> None:
         """ gdal_translate  wrapper        """
         self.log.info('gdaltranslate...')

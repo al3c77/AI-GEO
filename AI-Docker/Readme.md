@@ -1,12 +1,30 @@
 #Optoss Map AI
 
+It performs full AI processing: 
+- data whitening
+- fitting
+- predicting
+- generating of CloudOptimizedGeo tiff file,
+- uploading generated COG-tif to IBM _Cloud Storage_ and making uploaded file public-readable 
+
+Docker image could be run either locally with local-volumes mounted for the best performance on big Data-sets 
+or as a job in kubernetes IBM BlueMix cloud cluster
+
+If the image is run locally, missed data-set files will be downloaded from IBM _Cloud Storage_ 
+and cached locally
+
+Cloud-based _Kepler-tiles viewer_ and _COG-tiles server_ could be used to visualize generated images.   
+Docker files for these software images could be found in this repository in the `client` folder
+
+Refer `s4_shell.sh` and `s4_run.sh` if running image locally
+
 ## Building image
 
 ```bash
  docker build -t c4c_s4  .
 ```
 
-## Recipe format
+## Recipe file format (json)
 ```json
 {
   "DATADIR": "/data/",
@@ -63,23 +81,23 @@ app uses 2 directories (mount-points) from recipe file:
 - if downloading failed app will exit with error
  
 
-### supported commands :
+## supported commands :
 ### full processing
+performs full AI processing: data whitening, fitting, predicting, generation of CloudOptimizedGoe tiff file,
+uploading it to IBM Cloud Storage and making uploaded file public-readable 
 ```bash
 C4CAI$ docker run  c4c_s4  ./all.py --help
-usage: all.py [-h] [--recipe RECIPE] {full,zone} {fit,fitpredict,predict}
+usage: all.py [-h] [--recipe RECIPE] [--upload-filename UPLOAD_FILENAME]
 
 Generating COG image.
-
-positional arguments:
-  {full,zone}           Type of result
-  {fit,fitpredict,predict}
-                        Learning type
 
 optional arguments:
   -h, --help            show this help message and exit
   --recipe RECIPE       JSON recipe file with path, default is ./recipe.json
+  --upload-filename UPLOAD_FILENAME
+                        Type of result
 ```
+
 ### step-by-step
 ##### assemble tensors
 

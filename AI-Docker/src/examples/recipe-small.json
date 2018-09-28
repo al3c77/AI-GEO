@@ -2,9 +2,9 @@
   "DATADIR": "../test-data/small/data/",
   "OUTDIR": "../test-data/small/out/",
   "COS": {
-    "credentials": "../bluemix/cos_credentials",
     "endpoint": "https://s3.eu-de.objectstorage.softlayer.net",
-    "bucket": "cog-1"
+    "bucket": "cog-1",
+    "ResultKey":"cog-small.tif"
   },
   "channels": {
     "sigma": [

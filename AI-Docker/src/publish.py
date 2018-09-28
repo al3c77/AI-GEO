@@ -4,8 +4,10 @@ if --upload-filename options is missed, will try to get filename from Recipe[ CO
 
 """
 import logging
+import re
 
 from ai.COS import COS
+from ai.lib.Envi import Envi
 from ai.recipe import Recipe
 from command_line import cmd_options, check_recipe_exists
 from logger import init as initlog
@@ -18,8 +20,15 @@ required.add_argument('--upload-filename',
 args = cmd_options.parse_args()
 check_recipe_exists(args.recipe)
 
-recipe = Recipe(args.recipe)
+# recipe = Recipe(args.recipe)
+recipe = Recipe("./examples/recipe-small.json")
 cog_file = recipe['OUTDIR'] + 'cog-out.tif'
+
+cos = COS(recipe)
+
+
+
+
 
 cos_key = args.upload_filename
 if not cos_key and "COS" in recipe:
@@ -29,7 +38,9 @@ if not cos_key:
     log.critical("No COS key (upload file name)")
     exit(-1)
 
-log.debug(recipe.get("ssss"))
 log.info("uploading %s as %s", cog_file, cos_key)
 
-cos = COS(recipe).publish(cog_file, args.upload_filename)
+
+
+
+cos.publish(cog_file, cos_key)

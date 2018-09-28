@@ -1,60 +1,62 @@
 #!/usr/bin/env python3.7
 import json
+import logging
 import os
 
-from ai.lib.map_envi_cos.Envi import Envi
-from ai.tensor import Assemble
+from ai.lib.Envi import Envi
+from ai.assemble import Assemble
 
 from ai.COS import COS
 from ai.gdal_wrap import GDALWrap
 from ai.process import Process
+from ai.recipe import Recipe
 from ai.visualize import Visualize
 from command_line import cmd_options, check_recipe_exists
-from logger import logger
+from logger import init as initlog
+initlog('DEBUG')
 
-log = logger.getLogger('main')
+log = logging.getLogger('main')
 
-cmd_options.add_argument('mode',
-                         choices=('full', 'zone'),
-                         help='Type of result')
-cmd_options.add_argument('type',
-                         choices=('fit', 'fitpredict', 'predict'),
-                         help='Learning type')
+# cmd_options.add_argument('mode',
+#                          choices=('full', 'zone'),
+#                          help='Type of result')
+# cmd_options.add_argument('type',
+#                          choices=('fit', 'fitpredict', 'predict'),
+#                          help='Learning type')
 
-required = cmd_options.add_argument_group('required arguments')
-required.add_argument('--upload-filename',
-                      required=True,
+cmd_options.add_argument('--upload-filename',
                       help='Type of result')
 
 args = cmd_options.parse_args()
 check_recipe_exists(args.recipe)
+recipe = Recipe(args.recipe)
 
-cos = COS('/root/.bluemix/cos_credentials', args.recipe, logger)
-envi = Envi('./recipe-test.json', cos, logger)
+cos = COS(recipe)
+envi = Envi(recipe, cos)
 
-tensor = Assemble(args.mode, args.recipe, envi, logger)
-if tensor.run() != 0:
+
+if Assemble('both', recipe, envi).run() != 0:
     log.error('Tensor assemble failed')
     exit(-1)
 
 log.info("Learning...")
-processor = Process('zone', 'fit', args.recipe, logger)
+processor = Process('zone', 'fit', recipe)
 if processor.run() != 0:
     log.error('Processing failed')
     exit(-1)
 
 log.info("Prediction...")
-processor = Process('full', 'predict', args.recipe, logger)
+processor = Process('full', 'predict',  recipe)
 if processor.run() != 0:
     log.error('Processing failed')
     exit(-1)
 
-viz = Visualize(args.mode, args.recipe, envi, logger)
+viz = Visualize('full', recipe, envi)
 if viz.run() != 0:
     log.error('visualization failed')
     exit(-1)
 
-recipe = json.load(open(args.recipe, 'r'))
+
 WORKDIR = recipe['OUTDIR']
 file = WORKDIR + 'pred8c.img'
 out_file = WORKDIR + 'out.tif'
@@ -63,7 +65,7 @@ if not os.path.isfile(file):
     log.critical("File doen not exists! %s", file)
     raise SystemExit(1)
 
-w = GDALWrap(file, out_file, cog_file, logger)
+w = GDALWrap(file, out_file, cog_file)
 try:
     w.gdaltranslate()
     w.gdalwarp()
@@ -72,4 +74,13 @@ except RuntimeError as e:
     log.critical("COG-tiff generation failed %s", e)
 
 ###publish
-cos.publish(cog_file, args.upload_filename)
+cos_key = args.upload_filename
+if not cos_key and "COS" in recipe:
+    cos_key = recipe['COS'].get('ResultKey')
+
+if not cos_key:
+    log.critical("No COS key (upload file name)")
+    exit(-1)
+
+log.info("uploading %s as %s", cog_file, cos_key)
+cos.publish(cog_file, cos_key)

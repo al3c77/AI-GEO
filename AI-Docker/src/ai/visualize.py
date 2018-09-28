@@ -19,7 +19,6 @@ class Visualize(object):
         """
         self.mode = mode
         self.envi = envi
-        self.log.info("Getting recipe from {}".format(recipe))
         self.recipe = recipe.recipe
         self.DATADIR = self.recipe.get("DATADIR")
         self.WORKDIR = self.recipe.get("OUTDIR")
