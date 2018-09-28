@@ -41,7 +41,7 @@ Refer `s4_shell.sh` and `s4_run.sh` if running image locally
   },
   "GEOJSON":{
   
-            "COGURL": "http://159.122.178.150:30458/tiles/{z}/{x}/{y}@2x?url=https://s3.eu-de.objectstorage.softlayer.net/cog-1/cog-small.tif"
+            "COGURL": "http://159.122.178.150:30458/tiles/{z}/{x}/{y}@2x?url=https://s3.eu-de.objectstorage.softlayer.net/cog-1/cog-medium.tif"
   },
   "channels": {
     "sigma":     [      "Sigma0_IW2_VH_mst_06Aug2018"    ],
