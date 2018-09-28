@@ -2,14 +2,15 @@
 import json
 import os
 
+from ai.lib.map_envi_cos.Envi import Envi
+from ai.tensor import Assemble
+
 from ai.COS import COS
 from ai.gdal_wrap import GDALWrap
-from ai.lib.map_envi_cos.Envi import Envi
 from ai.process import Process
 from ai.visualize import Visualize
-from logger import logger
-from ai.tensor import Assemble
 from command_line import cmd_options, check_recipe_exists
+from logger import logger
 
 log = logger.getLogger('main')
 
@@ -35,7 +36,6 @@ tensor = Assemble(args.mode, args.recipe, envi, logger)
 if tensor.run() != 0:
     log.error('Tensor assemble failed')
     exit(-1)
-
 
 log.info("Learning...")
 processor = Process('zone', 'fit', args.recipe, logger)
@@ -63,13 +63,13 @@ if not os.path.isfile(file):
     log.critical("File doen not exists! %s", file)
     raise SystemExit(1)
 
-w = GDALWrap(file, out_file, cog_file,logger)
+w = GDALWrap(file, out_file, cog_file, logger)
 try:
     w.gdaltranslate()
     w.gdalwarp()
     w.gdaladdo()
 except RuntimeError as e:
-    log.critical("COG-tiff generation failed %s",e)
+    log.critical("COG-tiff generation failed %s", e)
 
 ###publish
 cos.publish(cog_file, args.upload_filename)

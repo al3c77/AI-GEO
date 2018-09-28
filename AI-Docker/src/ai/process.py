@@ -1,31 +1,30 @@
-import json
+#!/usr/bin/env python3.7
+import logging
 import os
-from logging import DEBUG, INFO
 from pickle import dump, load
 
 import numpy as np
-import time
 from scipy.ndimage.filters import gaussian_filter
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.mixture import GaussianMixture as GM
 from sklearn.utils import shuffle
 
-#todo remove file before saving
 # todo Assemble has zone|full|both while this filr only zone|full
-# todo pass recipe as JSON object
+from ai.recipe import Recipe
+
+
 class Process(object):
-    def __init__(self, mode, type, recipe_file, logger):
+    log = logging.getLogger('Process')
+
+    def __init__(self, mode, prediction_type, recipe: Recipe):
         """
 
-        :type logger: object
+        :type prediction_type: str
+        :type mode: str
         """
         self.mode = mode
-        self.type = type
-        self.log = logger.getLogger('Process')
-        self.log.setLevel(DEBUG)
-        self.log.info("Getting recipe from {}".format(recipe_file))
-        self.log.debug("Getting recipe from {}".format(recipe_file))
-        self.recipe = json.load(open(recipe_file, 'r'))
+        self.type = prediction_type
+        self.recipe = recipe
         self.WORKDIR = self.recipe.get("OUTDIR")
 
     def run(self):
@@ -36,8 +35,7 @@ class Process(object):
         if self.mode not in ('zone', 'full'):
             self.log.error("Bad mode '%s'. Allowed  [zone|full]", self.mode)
             return -1
-        self.log.info("Loading data...")
-        start_tm = time.time()
+
         if self.mode == 'zone':
             tnsr = np.load(self.WORKDIR + 'tnsr_zone.npy')
             bad_data = np.load(self.WORKDIR + 'bd_zone.npy')
@@ -48,12 +46,10 @@ class Process(object):
         cselect = tuple(self.recipe['learn_channels'])
 
         tnsr = tnsr[..., cselect]
-        self.log.info("Data loaded in %s sec", time.time() - start_tm)
         self.log.debug({'tnsr.shape': tnsr.shape})
         ts = tnsr.shape
-        start_tm = time.time()
+
         if self.type == 'fitpredict' or self.type == 'fit':
-            self.log.info('fitting...')
             gauss_sz = self.recipe['learn_gauss']
             if self.type == 'fitpredict':
                 tnsr_or = tnsr.copy()
@@ -76,7 +72,6 @@ class Process(object):
 
             dump(predictor, open(self.WORKDIR + 'predictor.pkl', 'wb'))
             np.save(self.WORKDIR + 'tnorm.npy', tnorm)
-            self.log.info('tnorm saved')
 
             cc = np.array(predictor.cluster_centers_)
             self.log.debug(cc)
@@ -85,15 +80,11 @@ class Process(object):
             self.log.debug('gm')
             dump(gm, open(self.WORKDIR + 'gm.pkl', 'wb'))
             # system("say 'learning done'")
-            self.log.info("Fit done in %s sec", time.time() - start_tm)
-
             if self.type == 'fitpredict':
                 tnsr = tnsr_or
             else:
-                self.log.info('Processing done')
                 return 0
-        self.log.info('predicting...')
-        start_tm = time.time()
+
         tnorm = np.load(self.WORKDIR + 'tnorm.npy')
         # predictor = load(open(DATADIR+'predictor.pkl','rb'))
         gm = load(open(self.WORKDIR + 'gm.pkl', 'rb'))
@@ -134,6 +125,6 @@ class Process(object):
         else:
             fname = self.WORKDIR + 'prob_pred_full.npy'
         np.save(fname, prob_pred)
-        self.log.info("predictors done in %s sec", time.time() - start_tm)
-        self.log.info('Processing done')
+        self.log.info("Process results saved as '%s'", fname)
+
         return 0  # all good

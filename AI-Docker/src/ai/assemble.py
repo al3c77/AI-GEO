@@ -1,6 +1,8 @@
-import json
+import logging
+import sys
+
+sys.path.insert(0, "./")
 import os
-from logging import DEBUG
 
 import numpy as np
 from medpy.filter.smoothing import anisotropic_diffusion
@@ -9,25 +11,39 @@ from scipy.ndimage.filters import gaussian_filter
 from ai.lib.map_adfilter import fix_pixels
 
 # todo pass recipe as JSON object
+from ai.lib.Envi import Envi
+
+
 class Assemble(object):
-    def __init__(self, mode, recipe_file, envi,logger):
+    # recipe = None  # type: Dict
+    log = logging.getLogger('tensor-assembler')
+
+    def __init__(self, mode, recipe, envi):
         """
 
-        :type envi: ai.lib.map_envi_cos.Envi
+        :type mode: str
+        :type envi: Envi
+        :type recipe: Recipe
         """
         self.envi = envi
         self.mode = mode
-        self.log = logger.getLogger('tensor-assembler')
-        self.log.setLevel(DEBUG)
-        self.log.info("Getting recipe from {}".format(recipe_file))
-        self.recipe = json.load(open(recipe_file, 'r'))
+        self.recipe = recipe
         self.envi.DATADIR = self.recipe.get("DATADIR")
         self.WORKDIR = self.recipe.get("OUTDIR")
 
     def run(self):
-
+        mode = self.mode
+        if mode not in ('zone', 'both', 'full'):
+            self.log.error("Unlnowm mode '%s' . Allowed: [zone|full|both]", mode)
+            return -1
         recipe = self.recipe
         # self.log.debug(recipe)
+        zone = np.array(recipe.get('zone'))
+        products = recipe['products']
+
+        if mode in ('zone', 'both') and zone is None:
+            self.log.error('No zone info in recipe')
+            return -1
 
         sigma_avg_names = recipe['channels'].get('sigma_avg', [])
         sigma_names = recipe['channels'].get('sigma', [])
@@ -41,30 +57,14 @@ class Assemble(object):
 
         channel_names = sigma_names + sigma_avg_names + sigma_vv_names + sigma_vh_names + coh_names + coh_avg_names + coh_vv_names + coh_vh_names
 
-        zone = np.array(recipe.get('zone'))
-        products = recipe['products']
-
         full_shape, _ = self.envi.read_header(channel_names[0])
         self.log.info({'full shape:': full_shape})
+
+        # zone = [[0, 0], [full_shape[0], full_shape[1]]]
 
         if zone is not None:
             zone_shape = (zone[1][0] - zone[0][0], zone[1][1] - zone[0][1])
             self.log.info({'Zone': zone, 'Shape': full_shape})
-
-        mode = self.mode
-        if mode == 'zone':
-            if zone is None:
-                self.log.error('No zone info in recipe')
-                return -1
-        elif mode == 'full':
-            pass
-        elif mode == 'both':
-            if zone is None:
-                self.log.error('No zone info in recipe')
-                return -1
-        else:
-            self.log.error("Unlnowm mode '%s' . Allowed: [zone|full|both]", mode)
-            return -1
 
         nproducts = ((len(sigma_names) if 'sigma' in products else 0) +
                      (1 if 'sigma_avg' in products else 0) +
@@ -344,6 +344,7 @@ class Assemble(object):
 
         if not os.path.exists(self.WORKDIR):
             os.makedirs(self.WORKDIR)
+        self.log.debug("Saving tnsr and bd into %s", self.WORKDIR)
         if mode in ('zone', 'both'):
             np.save(self.WORKDIR + 'tnsr_zone.npy', tnsr_zone)
             np.save(self.WORKDIR + 'bd_zone.npy', bd_zone)

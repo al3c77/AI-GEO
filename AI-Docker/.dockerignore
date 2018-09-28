@@ -107,10 +107,8 @@ venv.bak/
 .mypy_cache/
 
 bin/
-data/
-out/
-base/
-S4/
+test-data/
+src/examples/
 s4_*.sh
 
 59-V9yM3oWsNN

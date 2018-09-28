@@ -30,7 +30,7 @@
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
-
+*.iml
 # CMake
 cmake-build-*/
 
@@ -169,5 +169,5 @@ venv.bak/
 bin/
 data/
 out/
-
+test-data/
 bluemix/cos_credentials

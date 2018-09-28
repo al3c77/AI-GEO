@@ -1,9 +1,12 @@
 #!/usr/bin/env python3.7
+import logger
 from ai.COS import COS
-from ai.lib.map_envi_cos.Envi import Envi
+from ai.assemble import Assemble
+from ai.lib.Envi import Envi
+from ai.recipe import Recipe
 from command_line import cmd_options, check_recipe_exists
-from logger import logger
-from ai.tensor import Assemble
+
+logger.init()
 
 cmd_options.add_argument('mode',
                          choices=('full', 'zone', 'both'),
@@ -12,9 +15,8 @@ args = cmd_options.parse_args()
 
 check_recipe_exists(args.recipe)
 
-cos = COS('/root/.bluemix/cos_credentials', args.recipe, logger)
+recipe = Recipe(args.recipe)
+cos = COS(recipe)
+envi = Envi(recipe, cos)
 
-envi = Envi(args.recipe, cos.resource, logger)
-tensor = Assemble(args.mode, args.recipe, envi, logger)
-
-tensor.run()
+Assemble(args.mode, recipe, envi).run()

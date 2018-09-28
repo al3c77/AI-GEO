@@ -1,20 +1,26 @@
-import json
+import logging
 import re
-from logging import DEBUG
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # todo pass recipe as JSON object
 class Visualize(object):
-    def __init__(self, mode, recipe_file, envi, logger):
+    """ Make tif image from predictions prob_pred_*.npy """
+    log = logging.getLogger('Visualize')
 
+    def __init__(self, mode, recipe, envi):
+        """
+
+        :type envi: Envi
+        :type recipe: Recipe
+        :type mode: str
+        """
         self.mode = mode
         self.envi = envi
-        self.log = logger.getLogger('Visualize')
-        self.log.setLevel(DEBUG)
-        self.log.info("Getting recipe from {}".format(recipe_file))
-        self.recipe = json.load(open(recipe_file, 'r'))
+        self.log.info("Getting recipe from {}".format(recipe))
+        self.recipe = recipe.recipe
         self.DATADIR = self.recipe.get("DATADIR")
         self.WORKDIR = self.recipe.get("OUTDIR")
         self.envi.DATADIR = self.DATADIR

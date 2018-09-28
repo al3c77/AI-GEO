@@ -1,20 +1,15 @@
 #!/usr/bin/env python3.7
-import json
 from logging import DEBUG
 
-from ai.COS import COS
 from ai.lib.map_envi_cos.Envi import Envi
+
+from ai.COS import COS
 from logger import logger
-import ibm_boto3
-from ibm_botocore.client import Config
 
 log = logger.getLogger('test')
 log.setLevel(DEBUG)
 
-
-cos = COS('./cos_credentials','./recipe-test.json',logger)
-
-
+cos = COS('./cos_credentials', './recipe-test.json', logger)
 
 envi = Envi('./recipe-test.json', cos.resource, logger)
 
