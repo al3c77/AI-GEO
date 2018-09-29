@@ -19,7 +19,7 @@ Python 3.7 intelligent data pre-processor and clusterer that runs in Docker cont
 
 #### AI-Docker
 Docker image to run AI processing and Cloud Optimized GeoTIFF images generation for running in clouds
-
+![On IBM Cloud](https://github.com/Opt-OSS/AI-GEO/blob/master/AI-Docker/image.png)
 
 
 ## License
