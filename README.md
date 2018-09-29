@@ -17,5 +17,10 @@ COG and Tile-server Web API.
 #### AI
 Python 3.7 intelligent data pre-processor and clusterer that runs in Docker containers. Can be deployed to Kubernetes platform or execulted locally. This solution should work with unstructured satellite imagery and provide quick turnaround for rapid and precice change detection.
 
+#### AI-Docker
+Docker image to run AI processing and Cloud Optimized GeoTIFF images generation for running in clouds
+
+
+
 ## License
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg?longCache=true&style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
