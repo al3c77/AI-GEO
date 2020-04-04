@@ -1,3 +1,5 @@
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Opt-OSS/AI-GEO) 
+
 # AI-GEO
 OptOSS AI GEO Open Source code
 
